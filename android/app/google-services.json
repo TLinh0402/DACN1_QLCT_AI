@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1064752535102",
+    "firebase_url": "https://quanlychitieu-ccdbf-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "quanlychitieu-ccdbf",
+    "storage_bucket": "quanlychitieu-ccdbf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1064752535102:android:ef2d195b96926b577ce36f",
+        "android_client_info": {
+          "package_name": "com.example.qlmoney"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1064752535102-jdp2jjdr4ogmjflbhaaa1d2lharkqmok.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.qlmoney",
+            "certificate_hash": "f2c9109a35e3258abfad4b3571d88b2044957e0c"
+          }
+        },
+        {
+          "client_id": "1064752535102-qsrsfe2sptqq9qc6b0d5591f4sbd7q3v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPJX3zFi737iip5Si5JGimi2cAuGBAZIs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1064752535102-qsrsfe2sptqq9qc6b0d5591f4sbd7q3v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
