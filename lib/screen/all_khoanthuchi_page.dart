@@ -286,7 +286,7 @@ class _AllKhoanThuChiState extends State<AllKhoanThuChi> {
     final user = _auth.currentUser;
     if (user != null) {
       DatabaseReference databaseReference = FirebaseDatabase.instance
-          .reference()
+          .ref()
           .child('users')
           .child(user.uid)
           .child('khoanthuchi')

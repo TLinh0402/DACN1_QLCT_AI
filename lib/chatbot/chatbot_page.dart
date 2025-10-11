@@ -12,7 +12,7 @@ class _ChatBotPageState extends State<ChatBotPage> {
   final ScrollController _scrollController = ScrollController();
   final List<Map<String, String>> _messages = [];
 
-  final String openAiApiKey = 'Open api key here ';
+  final String openAiApiKey = ' ';
 
   Future<void> sendMessage(String message) async {
     if (message.trim().isEmpty) return;

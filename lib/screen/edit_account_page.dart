@@ -35,7 +35,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       _userRef = FirebaseDatabase.instance
-          .reference()
+          .ref()
           .child('users')
           .child(user.uid)
           .child('account');

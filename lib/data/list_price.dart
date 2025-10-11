@@ -10,13 +10,13 @@ class FirebaseService {
     if (user != null) {
       try {
         DatabaseEvent _moneyRef = await FirebaseDatabase.instance
-            .reference()
+            .ref()
             .child('users')
             .child(user.uid)
             .child('khoanthuchi')
             .once();
         DatabaseEvent snapshot = await FirebaseDatabase.instance
-            .reference()
+            .ref()
             .child('users')
             .child(user.uid)
             .child('typecategorys')
@@ -92,7 +92,7 @@ class FirebaseService {
     if (user != null) {
       try {
         DatabaseEvent thuchi = await FirebaseDatabase.instance
-            .reference()
+            .ref()
             .child('users')
             .child(user.uid)
             .child('khoanthuchi')
@@ -133,7 +133,7 @@ class FirebaseService {
     if (user != null) {
       try {
         DatabaseEvent thuchi = await FirebaseDatabase.instance
-            .reference()
+            .ref()
             .child('users')
             .child(user.uid)
             .child('khoanthuchi')
@@ -188,7 +188,7 @@ class FirebaseService {
     if (user != null) {
       try {
         DatabaseEvent thuchi = await FirebaseDatabase.instance
-            .reference()
+            .ref()
             .child('users')
             .child(user.uid)
             .child('khoanthuchi')
@@ -243,13 +243,13 @@ class FirebaseService {
     if (user != null) {
       try {
         DatabaseReference moneyRef = FirebaseDatabase.instance
-            .reference()
+            .ref()
             .child('users')
             .child(user.uid)
             .child('khoanthuchi');
 
         DatabaseReference categoryRef = FirebaseDatabase.instance
-            .reference()
+            .ref()
             .child('users')
             .child(user.uid)
             .child('typecategorys');

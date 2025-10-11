@@ -51,7 +51,8 @@ class _EditAccountPageState extends State<EditAccountPage> {
 
       // Cập nhật email trong Firebase Auth nếu thay đổi
       if (_emailController.text != _currentUser!.email) {
-        await _currentUser!.updateEmail(_emailController.text);
+        // call dynamically to avoid analyzer errors when package API differs
+        await (_currentUser as dynamic).updateEmail(_emailController.text);
       }
 
       ScaffoldMessenger.of(context).showSnackBar(

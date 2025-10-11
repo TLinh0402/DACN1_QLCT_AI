@@ -212,7 +212,7 @@ class _AddIncomeFormState extends State<AddIncomeForm> {
         String categoryId = await getCategoryID(categoryName);
 
         DatabaseReference refKhoanThuChi = FirebaseDatabase.instance
-            .reference()
+            .ref()
             .child('users')
             .child(user.uid)
             .child('khoanthuchi')
@@ -240,7 +240,7 @@ class _AddIncomeFormState extends State<AddIncomeForm> {
     if (user != null) {
       try {
         DatabaseEvent snapshot = await FirebaseDatabase.instance
-            .reference()
+            .ref()
             .child('users')
             .child(user.uid)
             .child('typecategorys')

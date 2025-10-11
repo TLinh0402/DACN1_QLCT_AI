@@ -474,8 +474,8 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        DatabaseReference ref = FirebaseDatabase.instance
-            .reference()
+    DatabaseReference ref = FirebaseDatabase.instance
+      .ref()
             .child('users')
             .child(user.uid)
             .child('typecategorys')
@@ -503,8 +503,8 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        DatabaseEvent snapshot = await FirebaseDatabase.instance
-            .reference()
+    DatabaseEvent snapshot = await FirebaseDatabase.instance
+      .ref()
             .child('users')
             .child(user.uid)
             .child('typecategorys')
@@ -544,8 +544,8 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
         // Lấy category_id từ category_name
         String categoryId = await getCategoryID(categoryName);
 
-        DatabaseReference refKhoanThuChi = FirebaseDatabase.instance
-            .reference()
+    DatabaseReference refKhoanThuChi = FirebaseDatabase.instance
+      .ref()
             .child('users')
             .child(user.uid)
             .child('khoanthuchi')
@@ -572,8 +572,8 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        DatabaseEvent snapshot = await FirebaseDatabase.instance
-            .reference()
+    DatabaseEvent snapshot = await FirebaseDatabase.instance
+      .ref()
             .child('users')
             .child(user.uid)
             .child('typecategorys')

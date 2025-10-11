@@ -42,7 +42,7 @@ class _RemindPageState extends State<RemindPage> {
     final user = _auth.currentUser;
     if (user != null) {
       DatabaseReference eventsRef =
-          _database.reference().child('users').child(user.uid).child('events');
+          _database.ref().child('users').child(user.uid).child('events');
       try {
         DataSnapshot snapshot = await eventsRef.get();
         if (snapshot.value != null) {
@@ -134,7 +134,7 @@ class _RemindPageState extends State<RemindPage> {
       if (user != null) {
         String eventId = Uuid().v4(); // Tạo id ngẫu nhiên
         DatabaseReference eventRef = _database
-            .reference()
+            .ref()
             .child('users')
             .child(user.uid)
             .child('events')
@@ -207,7 +207,7 @@ class _RemindPageState extends State<RemindPage> {
       final user = _auth.currentUser;
       if (user != null) {
         DatabaseReference eventRef = _database
-            .reference()
+            .ref()
             .child('users')
             .child(user.uid)
             .child('events')
@@ -302,7 +302,7 @@ class _RemindPageState extends State<RemindPage> {
       final user = _auth.currentUser;
       if (user != null) {
         DatabaseReference eventRef = _database
-            .reference()
+            .ref()
             .child('users')
             .child(user.uid)
             .child('events')

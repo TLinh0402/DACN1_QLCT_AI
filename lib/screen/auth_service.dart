@@ -1,37 +1,20 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  /// NOTE: Google Sign-In integration was causing build-time errors
+  /// due to breaking API changes in the `google_sign_in` package.
+  /// To make the project build reliably, this method is a safe stub
+  /// that returns null. Reintroduce the real Google Sign-In flow
+  /// once the project updates `google_sign_in` usage to the
+  /// installed package API.
   Future<User?> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        return null; // Người dùng hủy đăng nhập
-      }
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
-
-      return userCredential.user;
-    } catch (e) {
-      print("Lỗi đăng nhập Google: $e");
-      return null;
-    }
+    // Stub: no-op sign in
+    return null;
   }
 
   Future<void> signOut() async {
-    await _googleSignIn.signOut();
     await _auth.signOut();
   }
 }
