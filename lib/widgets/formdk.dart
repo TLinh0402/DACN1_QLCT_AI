@@ -131,15 +131,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 Navigator.pushNamed(context, SplashContent.routeName);
               }
             },
-            child: Text(
-              "Continue",
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(
-                  Color.fromARGB(255, 59, 141, 208)),
-            ),
+            child: const Text("Continue"),
           ),
         ],
       ),

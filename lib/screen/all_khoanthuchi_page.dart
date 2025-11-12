@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:qlmoney/data/category.dart';
 import 'package:qlmoney/data/money.dart';
-import 'package:qlmoney/widgets/category_list.dart';
-import 'package:qlmoney/widgets/khoan_thuchi_listview.dart';
-import 'package:qlmoney/data/list_price_find.dart'; // Import tệp dịch vụ
+import 'package:qlmoney/data/list_price_find.dart';
 
 class AllKhoanThuChi extends StatefulWidget {
   const AllKhoanThuChi({Key? key}) : super(key: key);
@@ -20,13 +18,14 @@ class _AllKhoanThuChiState extends State<AllKhoanThuChi> {
   List<Money> khoanThuChiList = [];
   List<Money> filteredList = [];
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseDatabase _database = FirebaseDatabase.instance;
   final TextEditingController _searchController = TextEditingController();
   Category? selectedCategory;
 
   @override
   void initState() {
     super.initState();
-    _layDuLieu(DateTime(1970)); //lấy tất cả các giao dịch
+    _layDuLieu(DateTime(1970));
     _searchController.addListener(_filterByName);
   }
 
@@ -44,7 +43,7 @@ class _AllKhoanThuChiState extends State<AllKhoanThuChi> {
     setState(() {
       String query = _searchController.text.toLowerCase();
       filteredList = khoanThuChiList.where((money) {
-        return money.name!.toLowerCase().contains(query);
+        return (money.name ?? '').toLowerCase().contains(query);
       }).toList();
     });
   }
@@ -68,159 +67,156 @@ class _AllKhoanThuChiState extends State<AllKhoanThuChi> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blueAccent,
+        title: const Text("All Income & Expense"),
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
           icon: const Icon(Ionicons.chevron_back_outline),
         ),
-        leadingWidth: 80,
       ),
       body: Container(
-        color: Colors.white,
+        color: Colors.grey[100],
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.only(left: 25.0),
-              child: Text("All Income and Expense",
-                  style: TextStyle(
-                    fontSize: 27,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.lightBlue,
-                  )),
-            ),
-            const SizedBox(
-              height: 25,
-            ),
-
-            // search bar
+            const SizedBox(height: 16),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.circular(12),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.search, color: Colors.grey),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        onSubmitted: (_) => _filterByName(),
+                        decoration: const InputDecoration(
+                          hintText: "Search income or expense",
+                          border: InputBorder.none,
+                        ),
                       ),
-                      child: Row(
-                        children: [
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Container(
-                              height: 30,
-                              child: Icon(Icons.search),
-                            ),
-                          ),
-                          Expanded(
-                            child: TextField(
-                              controller: _searchController,
-                              onSubmitted: (value) {
-                                _filterByName();
-                              },
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: "Search name Income or Expense!",
-                              ),
-                            ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.calendar_today, color: Colors.blueAccent),
+                      onPressed: _showDatePicker,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Padding(
+              padding: EdgeInsets.only(left: 20),
+              child: Text("Categories", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 140,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(left: 16),
+                itemCount: categoryList.length,
+                itemBuilder: (context, index) {
+                  final category = categoryList[index];
+                  return GestureDetector(
+                    onTap: () => _filterByCategory(category),
+                    child: Container(
+                      width: 110,
+                      margin: const EdgeInsets.only(right: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 15,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      _showDatePicker(); // Gọi hàm hiển thị lịch
-                    },
-                    child: Container(
-                      height: 50,
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.calendar_month,
-                        color: Colors.black,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset('assets/image/${category.icon ?? "default"}.png', height: 40,
+                              errorBuilder: (context, error, stackTrace) => const Icon(Icons.image_not_supported)),
+                          const SizedBox(height: 8),
+                          Text(category.name ?? 'No name', style: const TextStyle(fontWeight: FontWeight.w500)),
+                          const SizedBox(height: 4),
+                          Text("\$${category.totalPrice ?? 0}", style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
             ),
-            const SizedBox(
-              height: 30,
-            ),
+            const SizedBox(height: 20),
             const Padding(
-              padding: EdgeInsets.only(left: 25.0),
-              child: Text("Category",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  )),
+              padding: EdgeInsets.only(left: 20),
+              child: Text("Income & Expense", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ),
-            const SizedBox(
-              height: 15,
-            ),
-
-            Container(
-              height: 160,
-              child: ListView.builder(
-                  itemCount: categoryList.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () => _filterByCategory(categoryList[index]),
-                      child: CategoryList(
-                          name: categoryList[index].name,
-                          icon: categoryList[index].icon,
-                          totalPrice: categoryList[index].totalPrice),
-                    );
-                  }),
-            ),
-
-            // Khoản thu và khoản chi
-            const SizedBox(
-              height: 30,
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 25.0),
-              child: Text("Income and Expense",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  )),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ListView.builder(
                   itemCount: filteredList.length,
                   itemBuilder: (context, index) {
-                    return GestureDetector(
-                      // Sử dụng GestureDetector để bắt sự kiện nhấn giữ
-                      onLongPress: () {
-                        _showDeleteConfirmationDialog(filteredList[index]);
-                      },
-                      child: KhoanThuChiListview(
-                        name: filteredList[index].name,
-                        icon: filteredList[index].icon,
-                        date: filteredList[index].time,
-                        price: filteredList[index].price,
-                        type: filteredList[index].type,
-                        money: filteredList[index],
+                    final item = filteredList[index];
+                    return Card(
+                      elevation: 3,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      child: ListTile(
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: Image.asset('assets/image/${item.icon ?? "default"}.png',
+                              width: 40,
+                              height: 40,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => const Icon(Icons.image_not_supported)),
+                        ),
+                        title: Text(item.name ?? 'No name', style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text(item.time ?? 'Unknown time'),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "${(item.type ?? 'Expense') == 'Income' ? '+\$' : '-\$'}${item.price ?? '0'}",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: (item.type ?? 'Expense') == 'Income' ? Colors.green : Colors.pink,
+                              ),
+                            ),
+                            PopupMenuButton<String>(
+                              onSelected: (value) {
+                                if (value == 'edit') {
+                                  _showEditDialog(item);
+                                } else if (value == 'delete') {
+                                  _showDeleteConfirmationDialog(item);
+                                }
+                              },
+                              itemBuilder: (context) => [
+                                const PopupMenuItem(value: 'edit', child: Text('Sửa')),
+                                const PopupMenuItem(value: 'delete', child: Text('Xóa')),
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -233,47 +229,74 @@ class _AllKhoanThuChiState extends State<AllKhoanThuChi> {
     );
   }
 
-  // Hàm hiển thị hộp thoại xác nhận xóa
   Future<void> _showDeleteConfirmationDialog(Money money) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // Click ngoài hộp thoại không đóng hộp thoại
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Color.fromARGB(255, 212, 239, 251),
-          title: const Text(
-            'Xác nhận xóa',
-            style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-          ),
-          content: const SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('Bạn có muốn xóa mục này không?'),
-              ],
-            ),
-          ),
+          backgroundColor: const Color.fromARGB(255, 245, 252, 255),
+          title: const Text('Delete Confirmation', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
+          content: const Text('Do you really want to delete this item?'),
           actions: <Widget>[
-            TextButton(
-              child: const Text(
-                'Hủy',
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            TextButton(child: const Text('Cancel', style: TextStyle(color: Colors.grey)), onPressed: () => Navigator.of(context).pop()),
+            TextButton(child: const Text('Delete', style: TextStyle(color: Colors.red)), onPressed: () {
+              _deleteMoneyItem(money);
+              Navigator.of(context).pop();
+            }),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showEditDialog(Money money) async {
+    TextEditingController nameController = TextEditingController(text: money.name);
+    TextEditingController priceController = TextEditingController(text: money.price);
+    DateTime selectedDate = DateTime.now();
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Sửa giao dịch'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Tên')),
+              TextField(controller: priceController, decoration: const InputDecoration(labelText: 'Giá tiền'), keyboardType: TextInputType.number),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: selectedDate,
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime.now(),
+                  );
+                  if (picked != null) selectedDate = picked;
+                },
+                child: const Text('Chọn ngày'),
               ),
-              onPressed: () {
-                Navigator.of(context).pop(); // Đóng hộp thoại
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
+            ElevatedButton(
+              onPressed: () async {
+                final user = FirebaseAuth.instance.currentUser;
+                if (user != null && money.id != null) {
+                  final ref = FirebaseDatabase.instance.ref('users/${user.uid}/khoanthuchi/${money.id}');
+                  await ref.update({
+                    'name': nameController.text.trim(),
+                    'price': priceController.text.trim(),
+                    'date': "${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year}"
+                  });
+                  await _layDuLieu(DateTime(1970));
+                  Navigator.pop(context);
+                }
               },
-            ),
-            TextButton(
-              child: const Text(
-                'Xóa',
-                style:
-                    TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-              ),
-              onPressed: () {
-                // Thực hiện xóa và đóng hộp thoại
-                _deleteMoneyItem(money);
-                Navigator.of(context).pop();
-              },
+              child: const Text('Lưu'),
             ),
           ],
         );
@@ -281,38 +304,23 @@ class _AllKhoanThuChiState extends State<AllKhoanThuChi> {
     );
   }
 
-  // Hàm xóa mục khoản thu chi
   Future<void> _deleteMoneyItem(Money money) async {
     final user = _auth.currentUser;
     if (user != null) {
-      DatabaseReference databaseReference = FirebaseDatabase.instance
-          .ref()
-          .child('users')
-          .child(user.uid)
-          .child('khoanthuchi')
-          .child(money.id!);
-      // Thực hiện xóa tài liệu từ Realtime Database
-      databaseReference.remove().then((value) {
-        // Xóa thành công, cập nhật giao diện người dùng
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Deleted item')),
-        );
-
-        // Cập nhật giao diện người dùng sau khi xóa thành công
+      DatabaseReference ref = _database.ref().child('users/${user.uid}/khoanthuchi/${money.id}');
+      try {
+        await ref.remove();
         setState(() {
           khoanThuChiList.remove(money);
           filteredList.remove(money);
         });
-      }).catchError((error) {
-        // Xử lý lỗi nếu có
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi khi xóa mục: $error')),
-        );
-      });
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Deleted successfully')));
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error deleting item: $error')));
+      }
     }
   }
 
-  // Ham hien thi Calender
   Future<void> _showDatePicker() async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -321,7 +329,6 @@ class _AllKhoanThuChiState extends State<AllKhoanThuChi> {
       lastDate: DateTime.now(),
     );
     if (pickedDate != null) {
-      // Lấy dữ liệu cho ngày đã chọn
       _layDuLieu(pickedDate);
     }
   }

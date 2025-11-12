@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
@@ -27,20 +26,12 @@ class _EditAccountPageState extends State<EditAccountPage> {
   File? _imageFile;
   Uint8List? _webImage;
   String? _imageUrl;
-  DatabaseReference? _userRef;
+  final DatabaseReference _userRef =
+      FirebaseDatabase.instance.reference().child('users').child('account');
 
   @override
   void initState() {
     super.initState();
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      _userRef = FirebaseDatabase.instance
-          .ref()
-          .child('users')
-          .child(user.uid)
-          .child('account');
-    }
-
     fetchDataFromFirebase();
   }
 
@@ -53,7 +44,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
   }
 
   void fetchDataFromFirebase() {
-    _userRef?.once().then((DatabaseEvent event) {
+    _userRef.once().then((DatabaseEvent event) {
       DataSnapshot snapshot = event.snapshot;
       if (snapshot.value != null && snapshot.value is Map<dynamic, dynamic>) {
         var userData = snapshot.value as Map<dynamic, dynamic>;
@@ -110,68 +101,70 @@ class _EditAccountPageState extends State<EditAccountPage> {
     }
   }
 
-Future<void> _SaveData() async {
-  String name = nameController.text.trim();
-  String age = ageController.text.trim();
-  String email = emailController.text.trim();
+  Future<void> _SaveData() async {
+    String name = nameController.text.trim();
+    String age = ageController.text.trim();
+    String email = emailController.text.trim();
 
-  if (name.isEmpty || age.isEmpty || email.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Vui lòng điền đầy đủ thông tin.'),
-      ),
-    );
-    return;
-  }
-
-  try {
-    String imageUrl = _imageUrl ?? ''; // URL ảnh mặc định
-
-    // Nếu người dùng chọn ảnh mới, tải ảnh lên Firebase Storage
-    if (kIsWeb && _webImage != null) {
-      Reference ref = FirebaseStorage.instance
-          .ref()
-          .child('avatars/${DateTime.now()}.png');
-      UploadTask uploadTask = ref.putData(_webImage!);
-      TaskSnapshot snapshot = await uploadTask;
-      imageUrl = await snapshot.ref.getDownloadURL();
-    } else if (_imageFile != null) {
-      Reference ref = FirebaseStorage.instance
-          .ref()
-          .child('avatars/${DateTime.now()}.png');
-      UploadTask uploadTask = ref.putFile(_imageFile!);
-      TaskSnapshot snapshot = await uploadTask;
-      imageUrl = await snapshot.ref.getDownloadURL();
+    if (name.isEmpty ||
+        age.isEmpty ||
+        email.isEmpty ||
+        (_imageFile == null && _webImage == null)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Vui lòng điền đầy đủ thông tin và chọn ảnh.'),
+        ),
+      );
+      return;
     }
 
-    // Lưu thông tin người dùng vào Firebase Database
-    Map<String, dynamic> userData = {
-      'name': name,
-      'age': int.tryParse(age),
-      'email': email,
-      'gender': gender,
-      'avatar': imageUrl, // Lưu URL ảnh vào Firebase
-    };
+    try {
+      String imageUrl = '';
+      if (kIsWeb && _webImage != null) {
+        Reference ref = FirebaseStorage.instance
+            .ref()
+            .child('avatars/${DateTime.now()}.png');
+        UploadTask uploadTask = ref.putData(_webImage!);
+        TaskSnapshot snapshot = await uploadTask;
+        imageUrl = await snapshot.ref.getDownloadURL();
+      } else if (_imageFile != null) {
+        Reference ref = FirebaseStorage.instance
+            .ref()
+            .child('avatars/${DateTime.now()}.png');
+        UploadTask uploadTask = ref.putFile(_imageFile!);
+        TaskSnapshot snapshot = await uploadTask;
+        imageUrl = await snapshot.ref.getDownloadURL();
+      }
 
-    await _userRef?.set(userData);
+      setState(() {
+        _imageUrl = imageUrl;
+      });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Dữ liệu đã được lưu vào Firebase.'),
-      ),
-    );
+      Map<String, dynamic> userData = {
+        'name': name,
+        'age': int.tryParse(age),
+        'email': email,
+        'gender': gender,
+        'avatar': imageUrl,
+      };
 
-    // Trả dữ liệu về AccountPage
-    Navigator.pop(context, userData);
-  } catch (error) {
-    print('Đã xảy ra lỗi khi lưu dữ liệu: $error');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Đã xảy ra lỗi khi lưu dữ liệu.'),
-      ),
-    );
+      await _userRef.set(userData);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Dữ liệu và ảnh đã được lưu vào Firebase.'),
+        ),
+      );
+    } catch (error) {
+      print('Đã xảy ra lỗi khi tải ảnh lên Firebase: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Đã xảy ra lỗi khi tải ảnh lên Firebase.'),
+        ),
+      );
+    }
   }
-}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -34,7 +34,7 @@ class _AddIncomeFormState extends State<AddIncomeForm> {
     return null;
   }
 
-  String selectedCategory = "Lương ";
+  String selectedCategory = "Lương";
 
   String _selectedValue = 'Income';
 
@@ -57,146 +57,145 @@ class _AddIncomeFormState extends State<AddIncomeForm> {
             Positioned.fill(
               child: Image.asset(
                 'assets/image/bgAddIncome.jpg', // Đường dẫn tới hình ảnh của bạn
-                fit: BoxFit.fill,
+                fit: BoxFit.cover,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // const Text(
-                  //   'Add Income',
-                  //   style: TextStyle(
-                  //       fontSize: 22,
-                  //       fontWeight: FontWeight.bold,
-                  //       color: Colors.orange),
-                  // ),
-                  const SizedBox(
-                    height: 120,
-                  ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    child: TextFormField(
-                      controller: incomeNameController,
-                      textAlignVertical: TextAlignVertical.center,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.blue[50],
-                        prefixIcon: const Icon(FontAwesomeIcons.tags,
-                            size: 16, color: Colors.blue),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        labelText: 'Name',
-                        hintText: 'Enter income name',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  SizedBox(
-                    // width: MediaQuery.of(context).size.width * 0.7,
-                    child: TextFormField(
-                      key: _formKey,
-                      controller: incomePriceController,
-                      textAlignVertical: TextAlignVertical.center,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(
-                            RegExp(r'^\d*\.?\d*')),
-                      ],
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.blue[50],
-                        prefixIcon: const Icon(FontAwesomeIcons.dollarSign,
-                            size: 16, color: Colors.blue),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        labelText: 'How much?',
-                        hintText: 'Enter income price',
-                      ),
-                      validator: _validatePrice,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  // chon ngày tháng
-                  TextFormField(
-                    controller: dateController,
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // const Text(
+                //   'Add Income',
+                //   style: TextStyle(
+                //       fontSize: 22,
+                //       fontWeight: FontWeight.bold,
+                //       color: Colors.orange),
+                // ),
+                const SizedBox(
+                  height: 120,
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.7,
+                  child: TextFormField(
+                    controller: incomeNameController,
                     textAlignVertical: TextAlignVertical.center,
-                    readOnly: true,
-                    onTap: () async {
-                      DateTime? newDate = await showDatePicker(
-                        context: context,
-                        initialDate: selectedDate,
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(const Duration(days: 365)),
-                      );
-
-                      if (newDate != null) {
-                        setState(() {
-                          dateController.text =
-                              DateFormat('dd/MM/yyyy').format(newDate);
-                          selectedDate = newDate;
-                        });
-                      }
-                    },
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.blue[50],
-                      prefixIcon: const Icon(FontAwesomeIcons.clock,
+                      prefixIcon: const Icon(FontAwesomeIcons.tags,
                           size: 16, color: Colors.blue),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      hintText: 'Date',
+                      labelText: 'Name',
+                      hintText: 'Enter income name',
                     ),
                   ),
-                  const SizedBox(
-                    height: 32,
-                  ),
-                  SizedBox(
-                    width: 100,
-                    height: kToolbarHeight,
-                    child: TextButton(
-                      onPressed: () {
-                        _saveThu(
-                            incomeNameController.text,
-                            incomePriceController.text,
-                            selectedCategory,
-                            dateController.text,
-                            _selectedValue);
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => BottomNavigationPage()),
-                        );
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 24, 221, 10),
-                        padding: const EdgeInsets.all(16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                SizedBox(
+                  // width: MediaQuery.of(context).size.width * 0.7,
+                  child: TextFormField(
+                    key: _formKey,
+                    controller: incomePriceController,
+                    textAlignVertical: TextAlignVertical.center,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                    ],
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.blue[50],
+                      prefixIcon: const Icon(FontAwesomeIcons.dollarSign,
+                          size: 16, color: Colors.blue),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      child: const Text(
-                        'SAVE',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      labelText: 'How much?',
+                      hintText: 'Enter income price',
+                    ),
+                    validator: _validatePrice,
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                // chon ngày tháng
+                TextFormField(
+                  controller: dateController,
+                  textAlignVertical: TextAlignVertical.center,
+                  readOnly: true,
+                  onTap: () async {
+                    DateTime? newDate = await showDatePicker(
+                      context: context,
+                      initialDate: selectedDate,
+                      firstDate: DateTime.utc(2020,2,3),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                    );
+
+                    if (newDate != null) {
+                      setState(() {
+                        dateController.text =
+                            DateFormat('dd/MM/yyyy').format(newDate);
+                        selectedDate = newDate;
+                      });
+                    }
+                  },
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.blue[50],
+                    prefixIcon: const Icon(FontAwesomeIcons.clock,
+                        size: 16, color: Colors.blue),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    hintText: 'Date',
+                  ),
+                ),
+                const SizedBox(
+                  height: 32,
+                ),
+                SizedBox(
+                  width: 100,
+                  height: kToolbarHeight,
+                  child: TextButton(
+                    onPressed: () {
+                      _saveThu(
+                          incomeNameController.text,
+                          incomePriceController.text,
+                          selectedCategory,
+                          dateController.text,
+                          _selectedValue);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BottomNavigationPage()),
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 24, 221, 10),
+                      padding: const EdgeInsets.all(16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'SAVE',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
+      ],
         ),
       ),
     );
@@ -212,7 +211,7 @@ class _AddIncomeFormState extends State<AddIncomeForm> {
         String categoryId = await getCategoryID(categoryName);
 
         DatabaseReference refKhoanThuChi = FirebaseDatabase.instance
-            .ref()
+            .reference()
             .child('users')
             .child(user.uid)
             .child('khoanthuchi')
@@ -240,7 +239,7 @@ class _AddIncomeFormState extends State<AddIncomeForm> {
     if (user != null) {
       try {
         DatabaseEvent snapshot = await FirebaseDatabase.instance
-            .ref()
+            .reference()
             .child('users')
             .child(user.uid)
             .child('typecategorys')

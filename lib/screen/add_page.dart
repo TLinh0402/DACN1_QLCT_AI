@@ -3,6 +3,10 @@ import 'package:ionicons/ionicons.dart';
 import 'package:qlmoney/widgets/add_expense_form.dart';
 import 'package:qlmoney/widgets/add_income_form.dart';
 
+import 'bottom_navigation_bar.dart';
+
+
+
 class AddThuChiPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -47,3 +51,12 @@ class AddThuChiPage extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
+
+
+

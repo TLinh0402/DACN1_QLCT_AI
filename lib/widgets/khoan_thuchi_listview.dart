@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:qlmoney/data/money.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class KhoanThuChiListview extends StatelessWidget {
   final Money money;
 
-  KhoanThuChiListview(
-      {required this.money,
-      String? name,
-      String? icon,
-      String? date,
-      String? price,
-      String? type});
+  KhoanThuChiListview({
+    required this.money,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +17,7 @@ class KhoanThuChiListview extends StatelessWidget {
     String? time = money.time;
     String? price = money.price;
     String? type = money.type;
+    String? id = money.id; // <- Quan trọng để xóa
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
@@ -30,51 +29,87 @@ class KhoanThuChiListview extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                ClipRRect(
-                  child: Container(
-                    height: 50,
-                    padding: EdgeInsets.all(8),
-                    child: Image.asset("assets/image/$icon.png"),
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name!,
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      time,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontStyle: FontStyle.italic,
-                        color: Colors.blueGrey,
+            // Icon và thông tin
+            Expanded(
+              child: Row(
+                children: [
+                  ClipRRect(
+                    child: Container(
+                      height: 50,
+                      padding: EdgeInsets.all(8),
+                      child: Image.asset(
+                        "assets/image/$icon.png",
+                        width: 30,
+                        height: 30,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
-            Text(
-              ((type) == 'Income' ? "+\$ " : "-\$ ") + price,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 17,
-                color: (type) == 'Income' ? Colors.green : Colors.pink,
+                  ),
+                  const SizedBox(width: 10),
+                  Flexible(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name ?? '',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          time ?? '',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.blueGrey,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
+
+            // Giá tiền + nút
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  ((type == 'Income') ? "+\$ " : "-\$ ") + (price ?? '0'),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: (type == 'Income') ? Colors.green : Colors.pink,
+                  ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.edit, size: 20, color: Colors.orange),
+                      onPressed: () {
+                        // TODO: mở dialog sửa hoặc chuyển sang trang sửa
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.delete, size: 20, color: Colors.red),
+                      onPressed: () async {
+                        final user = FirebaseAuth.instance.currentUser;
+                        if (user != null && id != null) {
+                          await FirebaseDatabase.instance
+                              .ref('users/${user.uid}/khoanthuchi')
+                              .child(id)
+                              .remove();
+                        }
+                      },
+                    ),
+                  ],
+                )
+              ],
+            )
           ],
         ),
       ),

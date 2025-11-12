@@ -1,65 +1,82 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class EditAccountPage extends StatefulWidget {
-  const EditAccountPage({super.key});
+  const EditAccountPage({Key? key}) : super(key: key);
 
   @override
   State<EditAccountPage> createState() => _EditAccountPageState();
 }
 
 class _EditAccountPageState extends State<EditAccountPage> {
-  final _nameController = TextEditingController();
-  final _ageController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _emailController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  String _avatarUrl = 'assets/image/avatar.png';
 
-  final DatabaseReference _databaseRef =
-      FirebaseDatabase.instance.ref().child('users');
+  late final DatabaseReference _accountRef;
   final User? _currentUser = FirebaseAuth.instance.currentUser;
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-  }
-
-  void _loadUserData() async {
     if (_currentUser != null) {
-      final snapshot = await _databaseRef.child(_currentUser!.uid).get();
-      if (snapshot.exists) {
-        final data = snapshot.value as Map;
-        setState(() {
-          _nameController.text = data['name'] ?? '';
-          _ageController.text = data['age']?.toString() ?? '';
-          _phoneController.text = data['phone'] ?? '';
-          _emailController.text = data['email'] ?? _currentUser!.email!;
-        });
-      }
+      _accountRef = FirebaseDatabase.instance
+          .ref()
+          .child('users')
+          .child(_currentUser!.uid)
+          .child('account');
+      _loadUserData();
     }
   }
 
-  void _updateUserData() async {
-    if (_currentUser != null) {
-      await _databaseRef.child(_currentUser!.uid).update({
-        'name': _nameController.text,
-        'age': int.tryParse(_ageController.text) ?? 0,
-        'phone': _phoneController.text,
-        'email': _emailController.text,
+  Future<void> _loadUserData() async {
+    try {
+      final snapshot = await _accountRef.get();
+      if (snapshot.exists && snapshot.value is Map) {
+        final data = Map<String, dynamic>.from(snapshot.value as Map);
+        setState(() {
+          _nameController.text = data['name'] ?? '';
+          _emailController.text = data['email'] ?? _currentUser?.email ?? '';
+          _avatarUrl = data['avatar'] ?? _avatarUrl;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading account data: $e');
+    }
+  }
+
+  Future<void> _saveChanges() async {
+    if (_currentUser == null) return;
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+
+    try {
+      await _accountRef.update({
+        'name': name,
+        'email': email,
+        'avatar': _avatarUrl,
       });
 
-      // Cập nhật email trong Firebase Auth nếu thay đổi
-      if (_emailController.text != _currentUser!.email) {
-        // call dynamically to avoid analyzer errors when package API differs
-        await (_currentUser as dynamic).updateEmail(_emailController.text);
+      if (email != _currentUser!.email) {
+        await _currentUser!.updateEmail(email);
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User information updated successfully!')),
+        SnackBar(content: Text(tr('user_updated_success'))),
       );
 
-      Navigator.pop(context); // Quay lại trang trước
+      Navigator.pop(context, {
+        'name': name,
+        'email': email,
+        'avatar': _avatarUrl,
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(tr('update_failed'))),
+      );
+      debugPrint('Error saving account data: $e');
     }
   }
 
@@ -67,35 +84,36 @@ class _EditAccountPageState extends State<EditAccountPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Account'),
+        title: Text(tr('edit_account')),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            CircleAvatar(
+              radius: 40,
+              backgroundImage: _avatarUrl.startsWith('http')
+                  ? NetworkImage(_avatarUrl)
+                  : AssetImage(_avatarUrl) as ImageProvider,
+            ),
+            const SizedBox(height: 16),
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Name'),
+              decoration: InputDecoration(labelText: tr('name_label')),
             ),
-            TextField(
-              controller: _ageController,
-              decoration: const InputDecoration(labelText: 'Age'),
-              keyboardType: TextInputType.number,
-            ),
-            TextField(
-              controller: _phoneController,
-              decoration: const InputDecoration(labelText: 'Phone'),
-              keyboardType: TextInputType.phone,
-            ),
+            const SizedBox(height: 16),
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(labelText: tr('email_label')),
               keyboardType: TextInputType.emailAddress,
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _updateUserData,
-              child: const Text('Save Changes'),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _saveChanges,
+                child: Text(tr('save_changes')),
+              ),
             ),
           ],
         ),

@@ -10,13 +10,13 @@ Future<List<Money>> layKhoanThuChi(DateTime selectedDate) async {
   if (user != null) {
     try {
       DatabaseEvent _moneyRef = await FirebaseDatabase.instance
-          .ref()
+          .reference()
           .child('users')
           .child(user.uid)
           .child('khoanthuchi')
           .once();
       DatabaseEvent snapshot = await FirebaseDatabase.instance
-          .ref()
+          .reference()
           .child('users')
           .child(user.uid)
           .child('typecategorys')
@@ -101,8 +101,6 @@ Future<List<Money>> layKhoanThuChi(DateTime selectedDate) async {
   return danhSachThuChi;
 }
 
-
-
 // Ham lay Category
 Future<List<Category>> layCategory() async {
   List<Category> categories = [];
@@ -111,7 +109,7 @@ Future<List<Category>> layCategory() async {
   if (user != null) {
     try {
       DatabaseEvent snapshot = await FirebaseDatabase.instance
-          .ref()
+          .reference()
           .child('users')
           .child(user.uid)
           .child('typecategorys')
@@ -131,7 +129,7 @@ Future<List<Category>> layCategory() async {
 
           // Tìm kiếm category_id trong khoanthuchi
           DatabaseEvent khoanthuchiSnapshot = await FirebaseDatabase.instance
-              .ref()
+              .reference()
               .child('users')
               .child(user.uid)
               .child('khoanthuchi') // Sử dụng categoryID thay vì 'category_id'

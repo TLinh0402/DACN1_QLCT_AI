@@ -23,13 +23,13 @@ class SignUpScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Image.asset(
-                    "assets/image/logo.png",
+                    "assets/image/logo.png", // Replace "logo.png" with your actual logo asset path
                     width: 60,
                     height: 60,
                   ),
                   const SizedBox(
                     height: 15,
-                  ),
+                  ), // Add some space between the logo and text
                   const Text(
                     "Register Account",
                     style: headingStyle,
@@ -104,6 +104,7 @@ class _SignUpFormState extends State<SignUpForm> {
             },
             decoration: const InputDecoration(
               labelText: "Email",
+              hintText: "Enter your email",
               floatingLabelBehavior: FloatingLabelBehavior.always,
               suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
             ),
@@ -132,6 +133,7 @@ class _SignUpFormState extends State<SignUpForm> {
             },
             decoration: const InputDecoration(
               labelText: "Password",
+              hintText: "Enter your password",
               floatingLabelBehavior: FloatingLabelBehavior.always,
               suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
             ),
@@ -160,6 +162,7 @@ class _SignUpFormState extends State<SignUpForm> {
             },
             decoration: const InputDecoration(
               labelText: "Confirm Password",
+              hintText: "Re-enter your password",
               floatingLabelBehavior: FloatingLabelBehavior.always,
               suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
             ),

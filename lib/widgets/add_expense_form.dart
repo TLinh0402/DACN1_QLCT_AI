@@ -21,7 +21,6 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
   TextEditingController dateController = TextEditingController();
   DateTime selectedDate = DateTime.now();
 
-  // xac thuc price
   final _formKey = GlobalKey<FormState>();
 
   String? _validatePrice(String? value) {
@@ -48,7 +47,6 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
 
   String? selectedCategory;
   List<String> categories = [];
-
   String _selectedValue = 'Expense';
 
   @override
@@ -58,6 +56,28 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
     getCategoryFromFirebase();
   }
 
+  IconData getIconFromName(String name) {
+    switch (name) {
+      case 'salary':
+        return FontAwesomeIcons.moneyBill;
+      case 'food':
+        return FontAwesomeIcons.utensils;
+      case 'home':
+        return FontAwesomeIcons.house;
+      case 'pet':
+        return FontAwesomeIcons.dog;
+      case 'shopping':
+        return FontAwesomeIcons.bagShopping;
+      case 'tech':
+        return FontAwesomeIcons.laptop;
+      case 'travel':
+        return FontAwesomeIcons.plane;
+      case 'bill':
+        return FontAwesomeIcons.fileInvoice;
+      default:
+        return FontAwesomeIcons.question;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -70,8 +90,8 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
           children: [
             Positioned.fill(
               child: Image.asset(
-                'assets/image/add.jpg', // Đường dẫn tới hình ảnh của bạn
-                fit: BoxFit.fill,
+                'assets/image/add.jpg',
+                fit: BoxFit.cover,
               ),
             ),
             Padding(
@@ -79,21 +99,11 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // const Text(
-                  //   'Add Expense',
-                  //   style: TextStyle(
-                  //       fontSize: 22,
-                  //       fontWeight: FontWeight.bold,
-                  //       color: Colors.orange),
-                  // ),
-                  const SizedBox(
-                    height: 120,
-                  ),
+                  const SizedBox(height: 120),
                   Row(
                     children: [
                       SizedBox(
                         width: 180,
-                        // width: MediaQuery.of(context).size.width * 0.7,
                         child: TextFormField(
                           controller: expenseNameController,
                           textAlignVertical: TextAlignVertical.center,
@@ -110,12 +120,9 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        width: 10,
-                      ),
+                      const SizedBox(width: 10),
                       SizedBox(
                         width: 185,
-                        // width: MediaQuery.of(context).size.width * 0.7,
                         child: TextFormField(
                           key: _formKey,
                           controller: expensePriceController,
@@ -141,16 +148,12 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  // chọn tên loại chi tiêu
+                  const SizedBox(height: 16),
                   TextFormField(
                     textAlignVertical: TextAlignVertical.center,
                     controller: typeController,
                     readOnly: true,
                     onTap: () {
-                      // Hiển thị menu thả xuống khi nhấn vào TextField
                       showDialog(
                         context: context,
                         builder: (ctx) {
@@ -169,8 +172,7 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
                                   selectedCategory = value;
                                   typeController.text = value!;
                                 });
-                                Navigator.pop(
-                                    ctx); // Đóng hộp thoại sau khi chọn
+                                Navigator.pop(ctx);
                               },
                               decoration: InputDecoration(
                                 filled: true,
@@ -199,14 +201,14 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
                       suffixIcon: IconButton(
                         onPressed: () {
                           showDialog(
-                              context: context,
-                              builder: (ctx) {
-                                bool isExpense = false;
-                                String iconSelected = '';
-                                TextEditingController nameAddTypeController =
-                                    TextEditingController();
-                                return StatefulBuilder(
-                                    builder: (context, setState) {
+                            context: context,
+                            builder: (ctx) {
+                              bool isExpense = false;
+                              String iconSelected = '';
+                              TextEditingController nameAddTypeController =
+                              TextEditingController();
+                              return StatefulBuilder(
+                                builder: (context, setState) {
                                   return AlertDialog(
                                     title: const Text('Add Type Category'),
                                     backgroundColor: const Color.fromARGB(
@@ -219,22 +221,20 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
                                           TextFormField(
                                             controller: nameAddTypeController,
                                             textAlignVertical:
-                                                TextAlignVertical.center,
+                                            TextAlignVertical.center,
                                             decoration: InputDecoration(
                                               isDense: true,
                                               filled: true,
                                               fillColor: Colors.white,
                                               border: OutlineInputBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(12),
+                                                BorderRadius.circular(12),
                                                 borderSide: BorderSide.none,
                                               ),
                                               hintText: 'Name',
                                             ),
                                           ),
-                                          const SizedBox(
-                                            height: 16,
-                                          ),
+                                          const SizedBox(height: 16),
                                           TextFormField(
                                             onTap: () {
                                               setState(() {
@@ -242,7 +242,7 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
                                               });
                                             },
                                             textAlignVertical:
-                                                TextAlignVertical.center,
+                                            TextAlignVertical.center,
                                             readOnly: true,
                                             decoration: InputDecoration(
                                               isDense: true,
@@ -254,11 +254,10 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
                                               fillColor: Colors.white,
                                               border: OutlineInputBorder(
                                                 borderRadius: isExpense
-                                                    ? const BorderRadius
-                                                        .vertical(
-                                                        top:
-                                                            Radius.circular(12),
-                                                      )
+                                                    ? const BorderRadius.vertical(
+                                                  top:
+                                                  Radius.circular(12),
+                                                )
                                                     : BorderRadius.circular(12),
                                                 borderSide: BorderSide.none,
                                               ),
@@ -267,85 +266,88 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
                                           ),
                                           isExpense
                                               ? Container(
-                                                  width: MediaQuery.of(context)
-                                                      .size
-                                                      .width,
-                                                  height: 200,
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.vertical(
-                                                      bottom:
-                                                          Radius.circular(12),
-                                                    ),
-                                                  ),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: GridView.builder(
-                                                      gridDelegate:
-                                                          const SliverGridDelegateWithFixedCrossAxisCount(
-                                                        crossAxisCount: 3,
-                                                        crossAxisSpacing: 5,
-                                                        mainAxisSpacing: 5,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            height: 200,
+                                            decoration:
+                                            const BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                              BorderRadius.vertical(
+                                                bottom:
+                                                Radius.circular(12),
+                                              ),
+                                            ),
+                                            child: Padding(
+                                              padding:
+                                              const EdgeInsets.all(8.0),
+                                              child: GridView.builder(
+                                                gridDelegate:
+                                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                                  crossAxisCount: 3,
+                                                  crossAxisSpacing: 5,
+                                                  mainAxisSpacing: 5,
+                                                ),
+                                                itemCount: categoriesIcons
+                                                    .length,
+                                                itemBuilder:
+                                                    (context, int i) {
+                                                  return GestureDetector(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        iconSelected =
+                                                        categoriesIcons[
+                                                        i];
+                                                        print("iconSelected = '$iconSelected'");
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                      width: 60,
+                                                      height: 60,
+                                                      decoration:
+                                                      BoxDecoration(
+                                                        color: Colors.white,
+                                                        border: Border.all(
+                                                          width: 3,
+                                                          color: iconSelected ==
+                                                              categoriesIcons[
+                                                              i]
+                                                              ? Colors.green
+                                                              : Colors.grey,
+                                                        ),
+                                                        borderRadius:
+                                                        BorderRadius
+                                                            .circular(12),
                                                       ),
-                                                      itemCount: categoriesIcons
-                                                          .length,
-                                                      itemBuilder:
-                                                          (context, int i) {
-                                                        return GestureDetector(
-                                                          onTap: () {
-                                                            setState(() {
-                                                              iconSelected =
-                                                                  categoriesIcons[
-                                                                      i];
-                                                            });
-                                                          },
-                                                          child: Container(
-                                                              width: 50,
-                                                              height: 50,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                      border: Border.all(
-                                                                          width:
-                                                                              3,
-                                                                          color: iconSelected == categoriesIcons[i]
-                                                                              ? Colors
-                                                                                  .green
-                                                                              : Colors
-                                                                                  .grey),
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              12),
-                                                                      image:
-                                                                          DecorationImage(
-                                                                        image:
-                                                                            AssetImage(
-                                                                          'assets/image/${categoriesIcons[i]}.png',
-                                                                        ),
-                                                                      ))),
-                                                        );
-                                                      },
+                                                      child: Center(
+                                                        child: Icon(
+                                                          getIconFromName(
+                                                              categoriesIcons[
+                                                              i]),
+                                                          size: 28,
+                                                          color:
+                                                          Colors.blue,
+                                                        ),
+                                                      ),
                                                     ),
-                                                  ),
-                                                )
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          )
                                               : Container(),
-                                          const SizedBox(
-                                            height: 16,
-                                          ),
+                                          const SizedBox(height: 16),
                                           SizedBox(
                                             width: double.infinity,
                                             height: kToolbarHeight,
                                             child: TextButton(
                                               onPressed: () {
                                                 if (nameAddTypeController
-                                                        .text.isNotEmpty &&
+                                                    .text.isNotEmpty &&
                                                     iconSelected.isNotEmpty) {
                                                   var newTypeName =
-                                                      nameAddTypeController.text
-                                                          .toString();
+                                                      nameAddTypeController.text;
                                                   _saveCategory(newTypeName,
                                                       iconSelected);
                                                   Navigator.pop(ctx);
@@ -354,10 +356,10 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
                                               style: TextButton.styleFrom(
                                                 backgroundColor: Colors.black,
                                                 padding:
-                                                    const EdgeInsets.all(16),
+                                                const EdgeInsets.all(16),
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
-                                                      BorderRadius.circular(12),
+                                                  BorderRadius.circular(12),
                                                 ),
                                               ),
                                               child: const Text(
@@ -374,8 +376,10 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
                                       ),
                                     ),
                                   );
-                                });
-                              });
+                                },
+                              );
+                            },
+                          );
                         },
                         icon: const Icon(FontAwesomeIcons.plus,
                             size: 16,
@@ -387,10 +391,7 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
                       hintText: 'Category',
                     ),
                   ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  // chon ngày tháng
+                  const SizedBox(height: 16),
                   TextFormField(
                     controller: dateController,
                     textAlignVertical: TextAlignVertical.center,
@@ -399,8 +400,9 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
                       DateTime? newDate = await showDatePicker(
                         context: context,
                         initialDate: selectedDate,
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(const Duration(days: 365)),
+                        firstDate: DateTime.utc(2020, 2, 3),
+                        lastDate:
+                        DateTime.now().add(const Duration(days: 365)),
                       );
 
                       if (newDate != null) {
@@ -422,21 +424,19 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
                       hintText: 'Date',
                     ),
                   ),
-                  const SizedBox(
-                    height: 32,
-                  ),
+                  const SizedBox(height: 32),
                   SizedBox(
-                    // width: double.infinity,
                     width: 100,
                     height: kToolbarHeight,
                     child: TextButton(
                       onPressed: () {
                         _saveChi(
-                            expenseNameController.text,
-                            expensePriceController.text,
-                            selectedCategory!,
-                            dateController.text,
-                            _selectedValue);
+                          expenseNameController.text,
+                          expensePriceController.text,
+                          selectedCategory!,
+                          dateController.text,
+                          _selectedValue,
+                        );
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
@@ -444,7 +444,8 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
                         );
                       },
                       style: TextButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 24, 221, 10),
+                        backgroundColor:
+                        const Color.fromARGB(255, 24, 221, 10),
                         padding: const EdgeInsets.all(16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -468,20 +469,18 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
       ),
     );
   }
-
   // Ham luu category
   Future<void> _saveCategory(String nameNewType, String icon) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-    DatabaseReference ref = FirebaseDatabase.instance
-      .ref()
+        DatabaseReference ref = FirebaseDatabase.instance
+            .reference()
             .child('users')
             .child(user.uid)
             .child('typecategorys')
             .push();
-        String typeId =
-            ref.key ?? ''; // Sử dụng ref.key trực tiếp thay vì nullable
+        String typeId = ref.key ?? '';
         await ref.set({
           'id': typeId,
           'name': nameNewType,
@@ -489,63 +488,55 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
         });
         setState(() {
           categories.add(nameNewType);
-          // Thêm thông tin loại category mới vào danh sách hiện có
         });
       } catch (error) {
         print('Lỗi khi lưu category: $error');
-        // Xử lý lỗi ở đây, như hiển thị một snackbar hoặc hộp thoại cảnh báo
       }
     }
   }
 
-//   ham lay categories tu Firebase
+  // Ham lay categories tu Firebase
   Future<void> getCategoryFromFirebase() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-    DatabaseEvent snapshot = await FirebaseDatabase.instance
-      .ref()
+        DatabaseEvent snapshot = await FirebaseDatabase.instance
+            .reference()
             .child('users')
             .child(user.uid)
             .child('typecategorys')
             .once();
 
-        // Lấy dữ liệu từ snapshot
         var snapshotValue = snapshot.snapshot.value as Map<dynamic, dynamic>?;
 
         if (snapshotValue != null) {
-          // Duyệt qua mỗi phần tử trong snapshotValue
           snapshotValue.forEach((key, value) {
-            // Lấy dữ liệu từ mỗi phần tử và thêm vào danh sách categories
             String categoryName = value['name'];
-            if (categoryName != "Lương ") {
+            if (categoryName != "Lương") {
               categories.add(categoryName);
             }
           });
 
           setState(() {
-            // Cập nhật danh sách categories và gọi setState
             categories = categories;
           });
         }
       } catch (error) {
         print('Lỗi khi lấy danh sách categories từ Firebase: $error');
-        // Xử lý lỗi nếu có
       }
     }
   }
 
-//   Ham luu thu || chi
+  // Ham luu thu || chi
   Future<void> _saveChi(String name, String price, String categoryName,
       String date, String type) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-        // Lấy category_id từ category_name
         String categoryId = await getCategoryID(categoryName);
 
-    DatabaseReference refKhoanThuChi = FirebaseDatabase.instance
-      .ref()
+        DatabaseReference refKhoanThuChi = FirebaseDatabase.instance
+            .reference()
             .child('users')
             .child(user.uid)
             .child('khoanthuchi')
@@ -559,21 +550,21 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
           'category_id': categoryId,
           'date': date,
           'type': type,
+
         });
       } catch (error) {
         print('Lỗi khi lưu khoản Chi: $error');
-        // Xử lý lỗi ở đây, như hiển thị một snackbar hoặc hộp thoại cảnh báo
       }
     }
   }
 
-// Hàm này để lấy category_id từ category_name
+  // Ham lay category_id tu category_name
   Future<String> getCategoryID(String categoryName) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       try {
-    DatabaseEvent snapshot = await FirebaseDatabase.instance
-      .ref()
+        DatabaseEvent snapshot = await FirebaseDatabase.instance
+            .reference()
             .child('users')
             .child(user.uid)
             .child('typecategorys')
@@ -584,7 +575,6 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
         var snapshotValue = snapshot.snapshot.value as Map<dynamic, dynamic>?;
 
         if (snapshotValue != null) {
-          // Lấy category_id từ snapshot
           String categoryId = snapshotValue.keys.first;
           return categoryId;
         } else {

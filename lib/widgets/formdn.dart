@@ -46,7 +46,7 @@ class _SignFormState extends State<SignForm> {
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
-        Navigator.pop(context);
+        Navigator.pop(context); // Đóng dialog loading
         // Điều hướng đến trang HomePage
         Navigator.pushReplacement(
           context,
@@ -72,6 +72,7 @@ class _SignFormState extends State<SignForm> {
             decoration: const InputDecoration(
               labelText: "Email",
               hintText: "Enter your email",
+
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -118,15 +119,7 @@ class _SignFormState extends State<SignForm> {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: signIn,
-            child: Text(
-              "Sign In",
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(
-                  Color.fromARGB(255, 64, 211, 98)),
-            ),
+            child: const Text("Sign In"),
           ),
         ],
       ),

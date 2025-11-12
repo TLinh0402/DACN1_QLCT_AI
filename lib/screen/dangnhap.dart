@@ -1,7 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:qlmoney/screen/auth_service.dart';
-import 'package:qlmoney/screen/bottom_navigation_bar.dart';
 import 'package:qlmoney/widgets/formdn.dart';
 import 'dangky.dart';
 
@@ -28,8 +25,8 @@ class SignInScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Image.asset(
-                        "assets/image/logo.png",
-                        width: 60,
+                        "assets/image/logo.png", // Đường dẫn đến tệp ảnh
+                        width: 60, // Kích thước ảnh
                         height: 60,
                       ),
                     ],
@@ -43,6 +40,10 @@ class SignInScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  // const Text(
+                  //   "Sign in with your email and password\nor continue with social media",
+                  //   textAlign: TextAlign.center,
+                  // ),
                   const SizedBox(height: 16),
                   const SignForm(),
                   const SizedBox(height: 16),
@@ -55,31 +56,12 @@ class SignInScreen extends StatelessWidget {
                       ),
                       SocalCard(
                         icon: "assets/image/gg.jpg",
-                        press: () async {
-                          AuthService authService = AuthService();
-                          User? user = await authService.signInWithGoogle();
-                          if (user != null) {
-                            // Chuyển đến màn hình chính nếu đăng nhập thành công
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => BottomNavigationPage(),
-                              ),
-                            );
-                          } else {
-                            // Hiển thị thông báo lỗi nếu đăng nhập thất bại
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Google Sign-In Failed"),
-                              ),
-                            );
-                          }
-                        },
+                        press: () {},
                       ),
                     ],
                   ),
                   const SizedBox(height: 20),
-                  const NoAccount(),
+                  NoAccountText(),
                 ],
               ),
             ),
@@ -90,8 +72,8 @@ class SignInScreen extends StatelessWidget {
   }
 }
 
-class NoAccount extends StatelessWidget {
-  const NoAccount({Key? key}) : super(key: key);
+class NoAccountText extends StatelessWidget {
+  const NoAccountText({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +86,7 @@ class NoAccount extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () {
+            // Chuyển hướng đến trang đăng ký
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => SignUpScreen()),
@@ -113,7 +96,7 @@ class NoAccount extends StatelessWidget {
             "Sign Up",
             style: TextStyle(
               fontSize: 16,
-              color: Colors.blue,
+              color: Colors.blue, // Thay thế bằng màu sắc mong muốn
             ),
           ),
         ),

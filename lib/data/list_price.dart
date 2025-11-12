@@ -10,13 +10,13 @@ class FirebaseService {
     if (user != null) {
       try {
         DatabaseEvent _moneyRef = await FirebaseDatabase.instance
-            .ref()
+            .reference()
             .child('users')
             .child(user.uid)
             .child('khoanthuchi')
             .once();
         DatabaseEvent snapshot = await FirebaseDatabase.instance
-            .ref()
+            .reference()
             .child('users')
             .child(user.uid)
             .child('typecategorys')
@@ -34,15 +34,15 @@ class FirebaseService {
             String categoryIcon = '';
             String categoryName = '';
             String categoryId = value['category_id'];
-
-            categorySnapshot.forEach((key, categoryValue) {
-              String id = categoryValue['id'];
-              if (id == categoryId) {
-                categoryName = categoryValue['name'];
-                categoryIcon = categoryValue['icon'];
-              }
-            });
-
+            if (categorySnapshot != null) {
+              categorySnapshot.forEach((key, categoryValue) {
+                String id = categoryValue['id'];
+                if (id == categoryId) {
+                  categoryName = categoryValue['name'];
+                  categoryIcon = categoryValue['icon'];
+                }
+              });
+            }
             String time = value['date'];
             String name = value['name'];
             String type = value['type'];
@@ -92,7 +92,7 @@ class FirebaseService {
     if (user != null) {
       try {
         DatabaseEvent thuchi = await FirebaseDatabase.instance
-            .ref()
+            .reference()
             .child('users')
             .child(user.uid)
             .child('khoanthuchi')
@@ -133,7 +133,7 @@ class FirebaseService {
     if (user != null) {
       try {
         DatabaseEvent thuchi = await FirebaseDatabase.instance
-            .ref()
+            .reference()
             .child('users')
             .child(user.uid)
             .child('khoanthuchi')
@@ -188,7 +188,7 @@ class FirebaseService {
     if (user != null) {
       try {
         DatabaseEvent thuchi = await FirebaseDatabase.instance
-            .ref()
+            .reference()
             .child('users')
             .child(user.uid)
             .child('khoanthuchi')
@@ -243,13 +243,13 @@ class FirebaseService {
     if (user != null) {
       try {
         DatabaseReference moneyRef = FirebaseDatabase.instance
-            .ref()
+            .reference()
             .child('users')
             .child(user.uid)
             .child('khoanthuchi');
 
         DatabaseReference categoryRef = FirebaseDatabase.instance
-            .ref()
+            .reference()
             .child('users')
             .child(user.uid)
             .child('typecategorys');

@@ -1,54 +1,320 @@
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_database/firebase_database.dart';
+// import 'package:flutter/material.dart';
+// import 'package:ionicons/ionicons.dart';
+// import 'package:qlmoney/screen/bottom_navigation_bar.dart';
+// import 'package:qlmoney/screen/edit_account_page.dart';
+// import 'package:qlmoney/screen/screen_started.dart';
+// import 'package:qlmoney/widgets/forward_button.dart';
+// import 'package:qlmoney/widgets/setting_item.dart';
+// import 'package:qlmoney/widgets/setting_switch.dart';
+//
+// class AccountPage extends StatefulWidget {
+//   const AccountPage({super.key});
+//
+//   @override
+//   State<AccountPage> createState() => _AccountPageState();
+// }
+//
+// class _AccountPageState extends State<AccountPage> {
+//   bool isDarkMode = false;
+//   String? _avatarUrl;
+//   String? _nameUser;
+//   final DatabaseReference _userRef =
+//       FirebaseDatabase.instance.reference().child('users').child('account');
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     fetchDataFromFirebase();
+//   }
+//
+//   // Fetch data from Firebase
+//   void fetchDataFromFirebase() {
+//     _userRef.once().then((DatabaseEvent event) {
+//       DataSnapshot snapshot = event.snapshot;
+//       if (snapshot.value != null && snapshot.value is Map<dynamic, dynamic>) {
+//         var userData = snapshot.value as Map<dynamic, dynamic>;
+//         setState(() {
+//           _avatarUrl = userData['avatar'];
+//           _nameUser = userData['name'];
+//         });
+//       }
+//     }).catchError((error) {
+//       print('Đã xảy ra lỗi khi lấy dữ liệu từ Firebase: $error');
+//     });
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         leading: IconButton(
+//           onPressed: () {
+//             Navigator.pop(context);
+//           },
+//           icon: const Icon(Ionicons.chevron_back_outline),
+//         ),
+//         leadingWidth: 80,
+//       ),
+//       body: Column(
+//         children: [
+//           Expanded(
+//             child: SingleChildScrollView(
+//               child: Padding(
+//                 padding: const EdgeInsets.all(30),
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     Text(
+//                       "Settings",
+//                       style: TextStyle(
+//                         color: Colors.blue.shade300,
+//                         fontSize: 36,
+//                         fontWeight: FontWeight.bold,
+//                       ),
+//                     ),
+//                     const SizedBox(height: 30),
+//                     const Text(
+//                       "Account",
+//                       style: TextStyle(
+//                         fontSize: 24,
+//                         fontWeight: FontWeight.w500,
+//                       ),
+//                     ),
+//                     const SizedBox(height: 20),
+//                     SizedBox(
+//                       width: double.infinity,
+//                       child: Row(
+//                         crossAxisAlignment: CrossAxisAlignment.center,
+//                         children: [
+//                           _avatarUrl != null
+//                               ? Image.network(
+//                                   _avatarUrl!,
+//                                   width: 70,
+//                                   height: 70,
+//                                   errorBuilder: (BuildContext context,
+//                                       Object exception,
+//                                       StackTrace? stackTrace) {
+//                                     return Image.asset(
+//                                       'assets/image/avatar.png',
+//                                       width: 70,
+//                                       height: 70,
+//                                     );
+//                                   },
+//                                 )
+//                               : Image.asset(
+//                                   "assets/image/avatar.png",
+//                                   width: 70,
+//                                   height: 70,
+//                                 ),
+//                           const SizedBox(width: 20),
+//                           Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               _nameUser != null
+//                                   ? Text(
+//                                       _nameUser!,
+//                                       style: const TextStyle(
+//                                         fontSize: 18,
+//                                         fontWeight: FontWeight.w500,
+//                                       ),
+//                                     )
+//                                   : const Text(
+//                                       "Default Name",
+//                                       style: TextStyle(
+//                                         fontSize: 18,
+//                                         fontWeight: FontWeight.w500,
+//                                       ),
+//                                     ),
+//                               const Text(
+//                                 "22IT.B121",
+//                                 style: TextStyle(
+//                                   fontSize: 17,
+//                                   fontWeight: FontWeight.w300,
+//                                   color: Colors.grey,
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                           const Spacer(),
+//                           ForwardButton(
+//                             ontap: () async {
+//                               final result = await Navigator.push(
+//                                 context,
+//                                 MaterialPageRoute(
+//                                     builder: (context) =>
+//                                         const EditAccountPage()),
+//                               );
+//
+//                               if (result != null) {
+//                                 setState(() {
+//                                   _avatarUrl = result as String;
+//                                 });
+//                               }
+//                             },
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                     const SizedBox(height: 40),
+//                     const Text(
+//                       "Settings",
+//                       style: TextStyle(
+//                         fontSize: 24,
+//                         fontWeight: FontWeight.w500,
+//                       ),
+//                     ),
+//                     const SizedBox(height: 20),
+//                     SettingItem(
+//                       title: "Language",
+//                       icon: Ionicons.earth,
+//                       bgColor: Colors.orange.shade100,
+//                       iconColor: Colors.orange,
+//                       value: "English",
+//                       onTap: () {},
+//                     ),
+//                     const SizedBox(
+//                       height: 20,
+//                     ),
+//                     SettingItem(
+//                       title: "Notification",
+//                       icon: Ionicons.notifications,
+//                       bgColor: Colors.blue.shade100,
+//                       iconColor: Colors.blue,
+//                       onTap: () {},
+//                     ),
+//                     const SizedBox(
+//                       height: 20,
+//                     ),
+//                     SettingSwitch(
+//                       title: "Dark Mode",
+//                       icon: Ionicons.moon,
+//                       bgColor: Colors.purple.shade100,
+//                       iconColor: Colors.purple,
+//                       value: isDarkMode,
+//                       onTap: (value) {
+//                         setState(() {
+//                           isDarkMode = value;
+//                         });
+//                       },
+//                     ),
+//                     const SizedBox(
+//                       height: 20,
+//                     ),
+//                     SettingItem(
+//                       title: "Help",
+//                       icon: Ionicons.help_circle_outline,
+//                       bgColor: Colors.green.shade100,
+//                       iconColor: Colors.black,
+//                       onTap: () {},
+//                     ),
+//                     const SizedBox(
+//                       height: 20,
+//                     ),
+//                     SettingItem(
+//                       title: "LogOut",
+//                       icon: Ionicons.log_out,
+//                       bgColor: Colors.red.shade100,
+//                       iconColor: Colors.red,
+//                       onTap: () {
+//                         signUserOut();
+//                         Navigator.pushReplacement(
+//                           context,
+//                           MaterialPageRoute(
+//                             builder: (context) => SplashScreen(onTap: () {
+//                               // Define the action for onTap here
+//                               print("Button tapped");
+//                             }),
+//                           ),
+//                         );
+//                       },
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   // Sign out method
+//   void signUserOut() {
+//     FirebaseAuth.instance.signOut();
+//   }
+// }
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:qlmoney/main.dart';
+import 'package:qlmoney/main.dart'; // for themeNotifier
 import 'package:qlmoney/screen/bottom_navigation_bar.dart';
 import 'package:qlmoney/screen/edit_account_page.dart';
+import 'package:qlmoney/screen/screen_started.dart';
 import 'package:qlmoney/widgets/forward_button.dart';
 import 'package:qlmoney/widgets/setting_item.dart';
 import 'package:qlmoney/widgets/setting_switch.dart';
+import 'package:qlmoney/main.dart' show themeNotifier;
 
 class AccountPage extends StatefulWidget {
-  const AccountPage({super.key});
+  const AccountPage({Key? key}) : super(key: key);
 
   @override
   State<AccountPage> createState() => _AccountPageState();
 }
 
 class _AccountPageState extends State<AccountPage> {
-  bool isDrakMode = false;
-  String name = "Default Name"; // Tên mặc định
-  String email = "example@gmail.com"; // Email mặc định
-  String avatarUrl = "assets/image/avatar.png"; // Avatar mặc định
+  bool isDarkMode = false;
+  String? _avatarUrl;
+  String? _nameUser;
+  String? _emailUser;
+  late DatabaseReference _userRef;
 
   @override
   void initState() {
     super.initState();
-    _loadUserData(); // Tải dữ liệu người dùng từ Firebase
+    _loadUserData();
   }
 
-  /// Hàm tải dữ liệu người dùng từ Firebase
-  void _loadUserData() async {
+  /// Load current user data from Firebase Auth and Realtime Database
+  Future<void> _loadUserData() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      final userRef =
-          FirebaseDatabase.instance.ref().child('users').child(user.uid).child('account');
-      final snapshot = await userRef.get();
-      if (snapshot.exists) {
-        final data = snapshot.value as Map<dynamic, dynamic>;
+    if (user == null) return;
+    _emailUser = user.email;
+    _userRef = FirebaseDatabase.instance
+        .reference()
+        .child('users')
+        .child(user.uid)
+        .child('account');
+
+    try {
+      final event = await _userRef.once();
+      final snapshot = event.snapshot;
+      if (snapshot.value != null && snapshot.value is Map) {
+        final data = Map<String, dynamic>.from(snapshot.value as Map);
         setState(() {
-          name = data['name'] ?? "Default Name";
-          email = data['email'] ?? "example@gmail.com";
-          avatarUrl = data['avatar'] ?? "assets/image/avatar.png";
+          _avatarUrl = data['avatar'] as String?;
+          _nameUser = data['name'] as String?;
+        });
+      } else {
+        setState(() {
+          _avatarUrl = null;
+          _nameUser = null;
         });
       }
+    } catch (e) {
+      // Handle error
+      debugPrint('Error loading user data: $e');
     }
+    setState(() {});
   }
 
-  /// Hàm đăng xuất người dùng
-  void signUserOut() {
+  /// Sign out current user
+  void _signUserOut() {
     FirebaseAuth.instance.signOut();
   }
 
@@ -58,16 +324,18 @@ class _AccountPageState extends State<AccountPage> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.push(
+            // Navigate back to bottom navigation
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => const BottomNavigationPage(),
+                builder: (_) => const BottomNavigationPage(),
               ),
             );
           },
           icon: const Icon(Ionicons.chevron_back_outline),
         ),
         leadingWidth: 80,
+        title: Text('settings'.tr()),
       ),
       body: Column(
         children: [
@@ -79,144 +347,166 @@ class _AccountPageState extends State<AccountPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      tr("Settings"),
-                      style: TextStyle(
-                        color: Colors.blue.shade300,
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    Text(
-                      tr("Account"),
+                      'account'.tr(),
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: avatarUrl.startsWith('http')
-                                ? NetworkImage(avatarUrl)
-                                : AssetImage(avatarUrl) as ImageProvider,
-                            radius: 35,
+
+                    // Avatar, Name, Email row
+                    Row(
+                      children: [
+                        _avatarUrl != null
+                            ? ClipOval(
+                          child: Image.network(
+                            _avatarUrl!,
+                            width: 70,
+                            height: 70,
+                            fit: BoxFit.cover,
+                            errorBuilder:
+                                (ctx, obj, stack) => Image.asset(
+                              'assets/image/avatar.png',
+                              width: 70,
+                              height: 70,
+                            ),
                           ),
-                          const SizedBox(width: 20),
-                          Column(
+                        )
+                            : ClipOval(
+                          child: Image.asset(
+                            'assets/image/avatar.png',
+                            width: 70,
+                            height: 70,
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                name, // Hiển thị tên người dùng
+                                _nameUser ?? 'default_name'.tr(),
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
+                              const SizedBox(height: 4),
                               Text(
-                                email, // Hiển thị email người dùng
+                                _emailUser ?? 'no_email'.tr(),
                                 style: const TextStyle(
-                                  fontSize: 17,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w300,
                                   color: Colors.grey,
                                 ),
                               ),
                             ],
                           ),
-                          const Spacer(),
-                          ForwardButton(
-                            ontap: () async {
-                              // Điều hướng đến EditAccountPage và chờ kết quả
-                              final updatedData = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const EditAccountPage(),
-                                ),
-                              );
-
-                              // Nếu có dữ liệu trả về, cập nhật giao diện
-                              if (updatedData != null && mounted) {
-                                setState(() {
-                                  name = updatedData['name'] ?? name;
-                                  email = updatedData['email'] ?? email;
-                                  avatarUrl = updatedData['avatar'] ?? avatarUrl;
-                                });
-                              }
-                            },
-                          ),
-                        ],
-                      ),
+                        ),
+                        ForwardButton(
+                          ontap: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const EditAccountPage(),
+                              ),
+                            );
+                            if (result != null && result is Map<String, String>) {
+                              setState(() {
+                                _avatarUrl = result['avatar'];
+                                _nameUser = result['name'];
+                                _emailUser = result['email'];
+                              });
+                            }
+                          },
+                        ),
+                      ],
                     ),
+
                     const SizedBox(height: 40),
                     Text(
-                      tr("Settings"),
+                      'settings'.tr(),
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(height: 20),
+
+                    // Language toggle
                     SettingItem(
-                      title: tr("language"),
+                      title: 'language'.tr(),
                       icon: Ionicons.earth,
                       bgColor: Colors.orange.shade100,
                       iconColor: Colors.orange,
-                      value: context.locale.languageCode == 'en'
-                          ? "English"
-                          : "Tiếng Việt",
+                      value: context.locale.languageCode.toUpperCase(),
                       onTap: () {
-                        setState(() {
-                          if (context.locale.languageCode == 'en') {
-                            context.setLocale(const Locale('vi'));
-                          } else {
-                            context.setLocale(const Locale('en'));
-                          }
-                        });
+                        final newLocale = context.locale.languageCode == 'en'
+                            ? const Locale('vi')
+                            : const Locale('en');
+                        context.setLocale(newLocale);
                       },
                     ),
                     const SizedBox(height: 20),
+
+                    // Notification placeholder
                     SettingItem(
-                      title: tr("Notification"),
+                      title: 'notification'.tr(),
                       icon: Ionicons.notifications,
                       bgColor: Colors.blue.shade100,
                       iconColor: Colors.blue,
-                      onTap: () {},
+                      onTap: () {
+                        // TODO: implement notification settings
+                      },
                     ),
                     const SizedBox(height: 20),
+
+                    // Dark Mode switch
                     SettingSwitch(
-                      title: tr("Dark_Mode"),
+                      title: 'dark_mode'.tr(),
                       icon: Ionicons.moon,
                       bgColor: Colors.purple.shade100,
                       iconColor: Colors.purple,
-                      value: isDrakMode,
+                      value: isDarkMode,
                       onTap: (value) {
                         setState(() {
-                          isDrakMode = value;
-                          themeNotifier.value =
-                              value ? ThemeMode.dark : ThemeMode.light;
+                          // Cập nhật state cho switch
+                          isDarkMode = value;
+                          // Gán themeNotifier ở đây để đổi theme toàn app
+                          themeNotifier.value = value ? ThemeMode.dark : ThemeMode.light;
                         });
                       },
                     ),
                     const SizedBox(height: 20),
+
+                    // Help
                     SettingItem(
-                      title: tr("Help"),
+                      title: 'help'.tr(),
                       icon: Ionicons.help_circle_outline,
                       bgColor: Colors.green.shade100,
                       iconColor: Colors.black,
-                      onTap: () {},
+                      onTap: () {
+                        // TODO: navigate to Help page or show dialog
+                      },
                     ),
                     const SizedBox(height: 20),
+
+                    // Logout
                     SettingItem(
-                      title: tr("LogOut"),
+                      title: 'logout'.tr(),
                       icon: Ionicons.log_out,
                       bgColor: Colors.red.shade100,
                       iconColor: Colors.red,
                       onTap: () {
-                        signUserOut();
+                        _signUserOut();
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => SplashScreen(onTap: () {}),
+                          ),
+                              (route) => false,
+                        );
                       },
                     ),
                   ],
