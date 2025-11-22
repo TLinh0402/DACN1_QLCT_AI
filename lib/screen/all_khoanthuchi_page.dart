@@ -150,8 +150,14 @@ class _AllKhoanThuChiState extends State<AllKhoanThuChi> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset('assets/image/${category.icon ?? "default"}.png', height: 40,
-                              errorBuilder: (context, error, stackTrace) => const Icon(Icons.image_not_supported)),
+                          Builder(builder: (ctx) {
+                            final iconName = category.icon ?? '';
+                            if (iconName.isEmpty) {
+                              return const Icon(Icons.image_not_supported, size: 40);
+                            }
+                            return Image.asset('assets/image/$iconName.png', height: 40,
+                                errorBuilder: (context, error, stackTrace) => const Icon(Icons.image_not_supported));
+                          }),
                           const SizedBox(height: 8),
                           Text(category.name ?? 'No name', style: const TextStyle(fontWeight: FontWeight.w500)),
                           const SizedBox(height: 4),
@@ -183,11 +189,17 @@ class _AllKhoanThuChiState extends State<AllKhoanThuChi> {
                       child: ListTile(
                         leading: ClipRRect(
                           borderRadius: BorderRadius.circular(6),
-                          child: Image.asset('assets/image/${item.icon ?? "default"}.png',
-                              width: 40,
-                              height: 40,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => const Icon(Icons.image_not_supported)),
+                          child: Builder(builder: (ctx) {
+                            final iconName = item.icon ?? '';
+                            if (iconName.isEmpty) {
+                              return const Icon(Icons.image_not_supported, size: 40);
+                            }
+                            return Image.asset('assets/image/$iconName.png',
+                                width: 40,
+                                height: 40,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => const Icon(Icons.image_not_supported));
+                          }),
                         ),
                         title: Text(item.name ?? 'No name', style: const TextStyle(fontWeight: FontWeight.bold)),
                         subtitle: Text(item.time ?? 'Unknown time'),

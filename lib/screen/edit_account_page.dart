@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -26,12 +27,19 @@ class _EditAccountPageState extends State<EditAccountPage> {
   File? _imageFile;
   Uint8List? _webImage;
   String? _imageUrl;
-  final DatabaseReference _userRef =
-      FirebaseDatabase.instance.reference().child('users').child('account');
+  DatabaseReference? _userRef;
 
   @override
   void initState() {
     super.initState();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      _userRef = FirebaseDatabase.instance
+          .reference()
+          .child('users')
+          .child(user.uid)
+          .child('account');
+    }
     fetchDataFromFirebase();
   }
 
@@ -44,7 +52,8 @@ class _EditAccountPageState extends State<EditAccountPage> {
   }
 
   void fetchDataFromFirebase() {
-    _userRef.once().then((DatabaseEvent event) {
+    if (_userRef == null) return;
+    _userRef!.once().then((DatabaseEvent event) {
       DataSnapshot snapshot = event.snapshot;
       if (snapshot.value != null && snapshot.value is Map<dynamic, dynamic>) {
         var userData = snapshot.value as Map<dynamic, dynamic>;
@@ -79,10 +88,13 @@ class _EditAccountPageState extends State<EditAccountPage> {
     } else {
       pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
-        setState(() {
-          _imageFile = File(pickedFile?.path ?? '');
-          _webImage = null;
-        });
+        final String path = pickedFile.path;
+        if (path.isNotEmpty) {
+          setState(() {
+            _imageFile = File(path);
+            _webImage = null;
+          });
+        }
       }
     }
   }
@@ -148,7 +160,9 @@ class _EditAccountPageState extends State<EditAccountPage> {
         'avatar': imageUrl,
       };
 
-      await _userRef.set(userData);
+      if (_userRef != null) {
+        await _userRef!.set(userData);
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

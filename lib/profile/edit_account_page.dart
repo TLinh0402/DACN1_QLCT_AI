@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:qlmoney/screen/target_budget_page.dart';
 
 class EditAccountPage extends StatefulWidget {
   const EditAccountPage({Key? key}) : super(key: key);
@@ -15,7 +16,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
   final TextEditingController _emailController = TextEditingController();
   String _avatarUrl = 'assets/image/avatar.png';
 
-  late final DatabaseReference _accountRef;
+  DatabaseReference? _accountRef;
   final User? _currentUser = FirebaseAuth.instance.currentUser;
 
   @override
@@ -25,7 +26,7 @@ class _EditAccountPageState extends State<EditAccountPage> {
       _accountRef = FirebaseDatabase.instance
           .ref()
           .child('users')
-          .child(_currentUser!.uid)
+          .child(_currentUser.uid)
           .child('account');
       _loadUserData();
     }
@@ -33,7 +34,8 @@ class _EditAccountPageState extends State<EditAccountPage> {
 
   Future<void> _loadUserData() async {
     try {
-      final snapshot = await _accountRef.get();
+      if (_accountRef == null) return;
+      final snapshot = await _accountRef!.get();
       if (snapshot.exists && snapshot.value is Map) {
         final data = Map<String, dynamic>.from(snapshot.value as Map);
         setState(() {
@@ -48,19 +50,19 @@ class _EditAccountPageState extends State<EditAccountPage> {
   }
 
   Future<void> _saveChanges() async {
-    if (_currentUser == null) return;
+    if (_currentUser == null || _accountRef == null) return;
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
 
     try {
-      await _accountRef.update({
+      await _accountRef!.update({
         'name': name,
         'email': email,
         'avatar': _avatarUrl,
       });
 
-      if (email != _currentUser!.email) {
-        await _currentUser!.updateEmail(email);
+      if (email != _currentUser.email) {
+        await _currentUser.updateEmail(email);
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -113,6 +115,19 @@ class _EditAccountPageState extends State<EditAccountPage> {
               child: ElevatedButton(
                 onPressed: _saveChanges,
                 child: Text(tr('save_changes')),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const TargetBudgetPage()),
+                  );
+                },
+                child: const Text('Ngân sách mục tiêu'),
               ),
             ),
           ],

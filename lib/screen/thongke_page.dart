@@ -58,8 +58,13 @@ class _ThongKePageState extends State<ThongKePage> {
 
   void filterDataByDate() {
     List<Money> filteredData = moneyData.where((money) {
-      if (money.time == null) return false;
-      final moneyDate = DateFormat('dd/MM/yy').parse(money.time!);
+      if (money.time == null || money.time!.isEmpty) return false;
+      late DateTime moneyDate;
+      try {
+        moneyDate = DateFormat('dd/MM/yy').parse(money.time!);
+      } catch (_) {
+        return false;
+      }
       return (startDate == null || !moneyDate.isBefore(startDate!)) &&
           (endDate == null || !moneyDate.isAfter(endDate!));
     }).toList();

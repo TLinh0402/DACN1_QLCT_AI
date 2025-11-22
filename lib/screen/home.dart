@@ -9,7 +9,7 @@ import '../data/money.dart';
 class HomePage extends StatelessWidget {
   HomePage({Key? key}) : super(key: key);
 
-  final user = FirebaseAuth.instance.currentUser!;
+  final User? user = FirebaseAuth.instance.currentUser;
   final FirebaseService _firebaseService = FirebaseService();
 
   @override
@@ -52,14 +52,15 @@ class HomePage extends StatelessWidget {
                     ),
                   );
                 } else {
-                  if (snapshot.hasData && snapshot.data!.length == 3) {
-                    int totalIncome = snapshot.data![0];
-                    int totalExpense = snapshot.data![1];
-                    int total = snapshot.data![2];
+                  if (snapshot.hasData && (snapshot.data?.length ?? 0) == 3) {
+                    final data = snapshot.data!;
+                    int totalIncome = data[0];
+                    int totalExpense = data[1];
+                    int total = data[2];
                     return SliverToBoxAdapter(
                       child: _headerSection(
                         context,
-                        user.email!,
+                        user?.email ?? '',
                         totalIncome,
                         totalExpense,
                         total,
@@ -143,12 +144,19 @@ class HomePage extends StatelessWidget {
                         return ListTile(
                           leading: ClipRRect(
                             borderRadius: BorderRadius.circular(5),
-                            child: Image.asset(
-                              'assets/image/${moneyList[index].icon}.png',
-                              height: 40,
-                              width: 40,
-                              fit: BoxFit.cover,
-                            ),
+                            child: Builder(builder: (context) {
+                              final iconName = moneyList[index].icon;
+                              if (iconName == null || iconName.isEmpty) {
+                                return const Icon(Icons.image_not_supported, size: 40);
+                              }
+                              return Image.asset(
+                                'assets/image/$iconName.png',
+                                height: 40,
+                                width: 40,
+                                fit: BoxFit.cover,
+                                errorBuilder: (ctx, err, stack) => const Icon(Icons.image_not_supported, size: 40),
+                              );
+                            }),
                           ),
                           title: Text(
                             moneyList[index].name ?? '',

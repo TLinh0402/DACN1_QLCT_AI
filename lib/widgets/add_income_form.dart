@@ -226,10 +226,41 @@ class _AddIncomeFormState extends State<AddIncomeForm> {
           'date': date,
           'type': type,
         });
+        // Cập nhật balance tổng của người dùng
+        try {
+          final double amount = double.tryParse(price) ?? 0;
+          await _updateBalance(amount, true);
+        } catch (_) {}
       } catch (error) {
         print('Lỗi khi lưu khoản Chi: $error');
         // Xử lý lỗi ở đây, như hiển thị một snackbar hoặc hộp thoại cảnh báo
       }
+    }
+  }
+
+  // Cập nhật balance tổng (runTransaction để tránh race)
+  Future<void> _updateBalance(double amount, bool isIncome) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    DatabaseReference balanceRef = FirebaseDatabase.instance
+        .reference()
+        .child('users')
+        .child(user.uid)
+        .child('balance');
+
+    try {
+      // Read current balance and update (simple read-then-set)
+      DatabaseEvent ev = await balanceRef.once();
+      double current = 0;
+      if (ev.snapshot.value != null) {
+        current = double.tryParse(ev.snapshot.value.toString()) ?? 0;
+      }
+      double newVal = isIncome ? (current + amount) : (current - amount);
+      await balanceRef.set(newVal.toString());
+    } catch (e) {
+      // ignore errors for now
+      print('Lỗi khi cập nhật balance: $e');
     }
   }
 

@@ -4,7 +4,7 @@ import 'package:qlmoney/screen/home.dart';
 import 'package:qlmoney/screen/remind_page.dart';
 import 'package:qlmoney/screen/thongke_page.dart';
 
-import 'account_page.dart';
+import 'package:qlmoney/screen/settings_page.dart';
 
 class BottomNavigationPage extends StatefulWidget {
   const BottomNavigationPage({Key? key}) : super(key: key);
@@ -21,7 +21,7 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
     ThongKePage(),
     AddThuChiPage(),
     RemindPage(),
-    AccountPage(),
+    SettingsPage(),
   ];
 
   @override

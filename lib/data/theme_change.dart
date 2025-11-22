@@ -15,3 +15,6 @@ class ThemeChange extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+/// Singleton instance so other parts of the app can reuse the existing ThemeChange
+final ThemeChange themeChange = ThemeChange();

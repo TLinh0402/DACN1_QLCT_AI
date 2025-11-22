@@ -62,10 +62,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:qlmoney/screen/screen_started.dart';
 import 'package:qlmoney/screen/bottom_navigation_bar.dart';
+import 'package:qlmoney/data/theme_manager.dart';
 import 'data/login_main_page.dart';
 
-/// ValueNotifier global để điều khiển ThemeMode
-final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
+/// Theme notifier moved to `lib/data/theme_manager.dart`
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -96,6 +96,9 @@ Future<void> main() async {
     ],
     debug: true,
   );
+
+  // initialize theme manager to reuse existing ThemeChange state
+  initThemeManager();
 
   runApp(const MyApp());
 }

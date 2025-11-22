@@ -429,23 +429,18 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
                     width: 100,
                     height: kToolbarHeight,
                     child: TextButton(
-                      onPressed: () {
-                        _saveChi(
+                      onPressed: () async {
+                        await _confirmAndSave(
                           expenseNameController.text,
                           expensePriceController.text,
                           selectedCategory!,
                           dateController.text,
                           _selectedValue,
                         );
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => BottomNavigationPage()),
-                        );
                       },
                       style: TextButton.styleFrom(
                         backgroundColor:
-                        const Color.fromARGB(255, 24, 221, 10),
+                            const Color.fromARGB(255, 24, 221, 10),
                         padding: const EdgeInsets.all(16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -556,6 +551,121 @@ class _AddExpenseFormState extends State<AddExpenseForm> {
         print('Lỗi khi lưu khoản Chi: $error');
       }
     }
+  }
+
+  // Kiểm tra ngân sách cho category trong tháng hiện tại và cảnh báo nếu vượt
+  Future<void> _confirmAndSave(String name, String priceStr, String categoryName,
+      String date, String type) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final double amount = double.tryParse(priceStr) ?? 0;
+
+    try {
+      String categoryId = await getCategoryID(categoryName);
+
+      // Lấy budget (nếu có) cho category này
+      DatabaseEvent budgetSnap = await FirebaseDatabase.instance
+          .reference()
+          .child('users')
+          .child(user.uid)
+          .child('budgets')
+          .orderByChild('category_id')
+          .equalTo(categoryId)
+          .once();
+
+      double? limit;
+      if (budgetSnap.snapshot.value != null) {
+        try {
+          final map = budgetSnap.snapshot.value as Map<dynamic, dynamic>;
+          final first = map.values.first as Map<dynamic, dynamic>;
+          limit = double.tryParse(first['limit'].toString());
+        } catch (_) {
+          limit = null;
+        }
+      }
+
+      bool shouldProceed = true;
+      if (limit != null) {
+        final int month = selectedDate.month;
+        final int year = selectedDate.year;
+        double current = await _sumExpensesForCategoryMonth(categoryId, month, year);
+        if (current + amount > limit) {
+          // Hiển thị dialog cảnh báo
+          shouldProceed = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Cảnh báo ngân sách'),
+                  content: Text(
+                      'Bạn sắp vượt ngân sách cho mục "$categoryName". Hạn mức: $limit, Đã chi: $current, Giao dịch: $amount.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(false),
+                      child: const Text('Huỷ'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(true),
+                      child: const Text('Tiếp tục'),
+                    ),
+                  ],
+                ),
+              ) ??
+              false;
+        }
+      }
+
+      if (!shouldProceed) return;
+
+      await _saveChi(name, priceStr, categoryName, date, type);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => BottomNavigationPage()),
+      );
+    } catch (e) {
+      print('Lỗi khi kiểm tra ngân sách: $e');
+      // fallback: lưu bình thường
+      await _saveChi(name, priceStr, categoryName, date, type);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => BottomNavigationPage()),
+      );
+    }
+  }
+
+  Future<double> _sumExpensesForCategoryMonth(String categoryId, int month, int year) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return 0;
+
+    DatabaseEvent snapshot = await FirebaseDatabase.instance
+        .reference()
+        .child('users')
+        .child(user.uid)
+        .child('khoanthuchi')
+        .orderByChild('category_id')
+        .equalTo(categoryId)
+        .once();
+
+    double sum = 0;
+    if (snapshot.snapshot.value != null) {
+      final map = snapshot.snapshot.value as Map<dynamic, dynamic>;
+      map.forEach((k, v) {
+        try {
+          if (v['type'] == 'Expense') {
+            final String dateStr = (v['date'] ?? '').toString();
+            final parts = dateStr.split('/');
+            if (parts.length >= 3) {
+              int m = int.parse(parts[1]);
+              int y = int.parse(parts[2]);
+              if (y < 100) y += 2000;
+              if (m == month && y == year) {
+                sum += double.tryParse(v['price'].toString()) ?? 0;
+              }
+            }
+          }
+        } catch (_) {}
+      });
+    }
+    return sum;
   }
 
   // Ham lay category_id tu category_name
